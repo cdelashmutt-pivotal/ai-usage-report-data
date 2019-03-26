@@ -1,0 +1,50 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.3.RELEASE'
+		verifierVersion = '2.0.2.RELEASE'
+	}
+	repositories { mavenCentral() }
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:${verifierVersion}"
+	}
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-cloud-contract'
+
+group = 'io.pivotal.pa.usage'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories { mavenCentral() }
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-cloud-connectors'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'mysql:mysql-connector-java'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.SR2"
+	}
+}
+
+contracts {
+	packageWithBaseClasses = 'io.pivotal.pa.usage.usagedata.contracts'
+	baseClassMappings {
+		baseClassMapping(".*usagedata.*", "io.pivotal.pa.usage.usagedata.contracts.BaseClass")
+		baseClassMapping(".*download.*", "io.pivotal.pa.usage.usagedata.contracts.DownloadBaseClass")
+	}
+}
