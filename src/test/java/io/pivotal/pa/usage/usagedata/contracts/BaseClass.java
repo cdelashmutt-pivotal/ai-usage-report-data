@@ -11,31 +11,42 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UsagedataApplication.class)
 public abstract class BaseClass {
 
 	@Autowired
-	ReportController reportRestController;
+	private ReportController reportRestController;
 
 	@MockBean
-	UsageService usageService;
+	private UsageService usageService;
 
 	@Before
 	public void setup() {
 		RestAssuredMockMvc.standaloneSetup(MockMvcBuilders
 				.standaloneSetup(reportRestController));
 
-		Report report = new Report();
-		report.addSummary(new SummaryItem(
-				2019, 1, "FOG", "3c157d6c-675e-45f4-978d-aaad1a3980f3", "foobar-org", 1, 0
-		));
-		report.addDetail(new DetailItem(
-				2019, 1, "FOG", "3c157d6c-675e-45f4-978d-aaad1a3980f3", "foobar-org", "625af3db-a61f-47bd-8a52-88a0e909a691", "bapbaz-space", "004c9a54-8b7d-477e-acc1-85cef334f5cf", "quaz-app", 1, 0, 2, 2592000
-		));
+		List<SummaryItem> report = new ArrayList<>();
+
+		SummaryItem summary = new SummaryItem(2019, 1, "foobar-org", 1,1);
+		summary.addUpperDetail(new DetailItem("JCC", "bapbaz-space", "quaz-app", 1));
+		summary.addLowerDetail(new DetailItem("FOG", "bapbaz-space", "quaz-app", 1));
+		report.add(summary);
+
 		Mockito.when(usageService.findByYearMonth(2019, 1))
 				.thenReturn(report);
+
+		List<String> dates = new ArrayList<>();
+		dates.add("2019-1");
+		dates.add("2018-12");
+
+		Mockito.when(usageService.getAvailableDates())
+				.thenReturn(dates);
+
 	}
 
 }

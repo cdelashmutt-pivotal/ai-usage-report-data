@@ -2,10 +2,12 @@ package io.pivotal.pa.usage.usagedata;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UsageService {
 
-	public Report findByYearMonth(int year, int month) {
+	public List<SummaryItem> findByYearMonth(int year, int month) {
 		return null;
 	}
 
@@ -14,6 +16,10 @@ public class UsageService {
 	}
 
 	public String getDetailDownloadForYearMonth(int year, int month) {
+		return null;
+	}
+
+	public List<String> getAvailableDates() {
 		return null;
 	}
 }

@@ -1,22 +1,24 @@
 package io.pivotal.pa.usage.usagedata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SummaryItem {
 	private int year;
 	private int month;
-	private String platform;
-	private String organizationGUID;
 	private String organizationName;
-	private int maxInstances;
-	private int maxTasks;
+	private int lowerEnvironmentMaxInstances;
+	private int upperEnvironmentMaxInstances;
 
-	public SummaryItem(int year, int month, String platform, String organizationGUID, String organizationName, int maxInstances, int maxTasks) {
+	private List<DetailItem> upperDetails = new ArrayList<>();
+	private List<DetailItem> lowerDetails = new ArrayList<>();
+
+	public SummaryItem(int year, int month, String organizationName, int lowerEnvironmentMaxInstances, int upperEnvironmentMaxInstances) {
 		this.year = year;
 		this.month = month;
-		this.platform = platform;
-		this.organizationGUID = organizationGUID;
 		this.organizationName = organizationName;
-		this.maxInstances = maxInstances;
-		this.maxTasks = maxTasks;
+		this.lowerEnvironmentMaxInstances = lowerEnvironmentMaxInstances;
+		this.upperEnvironmentMaxInstances = upperEnvironmentMaxInstances;
 	}
 
 	public int getYear() {
@@ -35,22 +37,6 @@ public class SummaryItem {
 		this.month = month;
 	}
 
-	public String getPlatform() {
-		return platform;
-	}
-
-	public void setPlatform(String platform) {
-		this.platform = platform;
-	}
-
-	public String getOrganizationGUID() {
-		return organizationGUID;
-	}
-
-	public void setOrganizationGUID(String organizationGUID) {
-		this.organizationGUID = organizationGUID;
-	}
-
 	public String getOrganizationName() {
 		return organizationName;
 	}
@@ -59,19 +45,44 @@ public class SummaryItem {
 		this.organizationName = organizationName;
 	}
 
-	public int getMaxInstances() {
-		return maxInstances;
+	public int getLowerEnvironmentMaxInstances() {
+		return lowerEnvironmentMaxInstances;
 	}
 
-	public void setMaxInstances(int maxInstances) {
-		this.maxInstances = maxInstances;
+	public void setLowerEnvironmentMaxInstances(int lowerEnvironmentMaxInstances) {
+		this.lowerEnvironmentMaxInstances = lowerEnvironmentMaxInstances;
 	}
 
-	public int getMaxTasks() {
-		return maxTasks;
+	public int getUpperEnvironmentMaxInstances() {
+		return upperEnvironmentMaxInstances;
 	}
 
-	public void setMaxTasks(int maxTasks) {
-		this.maxTasks = maxTasks;
+	public void setUpperEnvironmentMaxInstances(int upperEnvironmentMaxInstances) {
+		this.upperEnvironmentMaxInstances = upperEnvironmentMaxInstances;
 	}
+
+	public List<DetailItem> getUpperDetails() {
+		return upperDetails;
+	}
+
+	public void setUpperDetails(List<DetailItem> upperDetails) {
+		this.upperDetails = upperDetails;
+	}
+
+	public void addUpperDetail(DetailItem detail) {
+		this.upperDetails.add(detail);
+	}
+
+	public List<DetailItem> getLowerDetails() {
+		return lowerDetails;
+	}
+
+	public void setLowerDetails(List<DetailItem> lowerDetails) {
+		this.lowerDetails = lowerDetails;
+	}
+
+	public void addLowerDetail(DetailItem detail) {
+		this.lowerDetails.add(detail);
+	}
+
 }
