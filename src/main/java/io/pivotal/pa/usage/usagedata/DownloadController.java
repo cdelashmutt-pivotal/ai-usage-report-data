@@ -3,16 +3,14 @@ package io.pivotal.pa.usage.usagedata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/download")
+@CrossOrigin(origins = {"*"})
 public class DownloadController {
 
-	UsageService usageService;
+	private UsageService usageService;
 
 	@Autowired
 	public DownloadController(UsageService usageService) {

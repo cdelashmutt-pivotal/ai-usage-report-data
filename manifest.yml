@@ -1,0 +1,7 @@
+---
+applications:
+  - name: usage-data
+    buildpack: java_buildpack_offline
+    path: build/libs/usagedata-1.0.0-SNAPSHOT.jar
+    services:
+      - db

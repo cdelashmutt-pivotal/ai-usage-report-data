@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -15,13 +16,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UsagedataApplication.class)
+@AutoConfigureRestDocs
 public abstract class DownloadBaseClass {
 
 	@Autowired
-	DownloadController downloadController;
+	private DownloadController downloadController;
 
 	@MockBean
-	UsageService usageService;
+	private UsageService usageService;
 
 	@Before
 	public void setup() {

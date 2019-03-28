@@ -2,10 +2,12 @@ package io.pivotal.pa.usage.usagedata.contracts;
 
 import io.pivotal.pa.usage.usagedata.*;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.restassured.specification.RequestSpecification;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,10 +19,14 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UsagedataApplication.class)
+@AutoConfigureRestDocs
 public abstract class BaseClass {
 
 	@Autowired
 	private ReportController reportRestController;
+
+	@Autowired
+	private RequestSpecification documentationSpec;
 
 	@MockBean
 	private UsageService usageService;
