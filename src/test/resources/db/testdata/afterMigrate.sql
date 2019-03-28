@@ -1,7 +1,8 @@
 insert into `org_app_usage`(`space_guid`,`space_name`,`app_name`,`app_guid`,`instance_count`,`memory_in_mb_per_instance`,`duration_in_seconds`,`organization_name`,`organization_guid`,`period_start`,`period_end`,`platform`)
 values
-('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','WebApplication1','0647e17c-c2e2-4662-9ce1-4706e3fb51eb','1','1024','1618','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
-,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','my-app','0ba2746b-96f9-4fcf-a35e-fa068bc2d34e','1','12','49','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
+('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','WebApplication1','0647e17c-c2e2-4662-9ce1-4706e3fb51eb','1','1024','1618','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-02-01T00:00:00','2019-02-28T23:59:59','Sandbox')
+,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','WebApplication1','0647e17c-c2e2-4662-9ce1-4706e3fb51eb','1','1024','1618','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
+,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','my-app','0ba2746b-96f9-4fcf-a35e-fa068bc2d34e','2','12','49','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
 ,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','PaymentPosting-Service','23c833fe-0d0e-480c-b197-ef1a90968ceb','1','1024','1319','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
 ,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','FirstPCFTest','4921ded6-02e6-4be5-99fe-273533cc9c23','1','12','73','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')
 ,('ec0e188d-72e5-4a04-921e-8ae2494f0d71','development','TransactionAPI','4e2a1017-a003-41ba-8eba-c6217f7f7574','1','512','11','biller-org','8f5b1187-63fc-4c2e-8598-8d577eb9bb35','2019-01-01T00:00:00','2019-01-30T23:59:59','Sandbox')

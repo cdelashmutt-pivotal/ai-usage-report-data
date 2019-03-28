@@ -5,9 +5,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/v1/download")
-@CrossOrigin(origins = {"*"})
 public class DownloadController {
 
 	private UsageService usageService;

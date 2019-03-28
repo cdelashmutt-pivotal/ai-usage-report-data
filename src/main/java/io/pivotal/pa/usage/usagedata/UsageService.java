@@ -59,7 +59,8 @@ public class UsageService {
 							"Year(Period_Start) = :year " +
 							"and Month(Period_Start) = :month " +
 							"and Organization_Name = :organizationName " +
-							"and platform in (:platforms)",
+							"and platform in (:platforms) " +
+							"order by instance_count DESC",
 						queryParameters,
 						(lowerRs, lowerRowNum) -> new DetailItem(
 							lowerRs.getString("platform"), lowerRs.getString("space_name"), lowerRs.getString("app_name"), lowerRs.getInt("instance_count")
@@ -79,7 +80,8 @@ public class UsageService {
 							"Year(Period_Start) = :year " +
 							"and Month(Period_Start) = :month " +
 							"and Organization_Name = :organizationName " +
-							"and platform in (:platforms)",
+							"and platform in (:platforms) " +
+							"order by instance_count DESC",
 						queryParameters,
 						(upperRs, upperRowNum) -> new DetailItem(
 							upperRs.getString("platform"), upperRs.getString("space_name"), upperRs.getString("app_name"), upperRs.getInt("instance_count")
@@ -100,9 +102,11 @@ public class UsageService {
 	}
 
 	public List<String> getAvailableDates() {
-		return jdbcTemplate.queryForList("select distinct " +
-				"Concat(Year(Period_Start),Concat('-', Month(Period_Start))) " +
-				"from org_app_usage", (SqlParameterSource)null, String.class);
+		return jdbcTemplate.query("select distinct " +
+				"Year(Period_Start), Month(Period_Start), Concat(Year(Period_Start),Concat('-', Month(Period_Start))) as yearmonth " +
+				"from org_app_usage " +
+				"order by Year(Period_Start) DESC, Month(Period_Start) DESC",
+				(rs,rowNum) -> rs.getString("yearmonth"));
 	}
 
 }

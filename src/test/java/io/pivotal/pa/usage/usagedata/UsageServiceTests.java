@@ -33,11 +33,13 @@ public class UsageServiceTests {
 			assertThat(item.getMonth(), equalTo(1));
 			assertThat(item.getOrganizationName(), isIn(Arrays.asList("biller-org", "bsco-org")));
 			if ("biller-org".equals(item.getOrganizationName())) {
-				assertThat(item.getLowerEnvironmentMaxInstances(), equalTo(7));
+				assertThat(item.getLowerEnvironmentMaxInstances(), equalTo(8));
 				assertThat(item.getUpperEnvironmentMaxInstances(), equalTo(20));
 				List<DetailItem> lowerDetails = item.getLowerDetails();
 				assertThat(lowerDetails, notNullValue());
 				assertThat(lowerDetails.size(), equalTo(7));
+				assertThat(lowerDetails.get(0).getMaxInstances(), equalTo(2));
+
 				List<DetailItem> upperDetails = item.getUpperDetails();
 				assertThat(upperDetails, notNullValue());
 				assertThat(upperDetails.size(), equalTo(10));
@@ -58,7 +60,9 @@ public class UsageServiceTests {
 	public void getAvailableDates_returnsDates() {
 		List<String> dateList = usageService.getAvailableDates();
 		assertThat(dateList, notNullValue());
-		assertThat(dateList.size(), equalTo(1));
-		assertThat(dateList.get(0), equalTo("2019-1"));
+		assertThat(dateList.size(), equalTo(2));
+		assertThat(dateList.get(0), equalTo("2019-2"));
+		assertThat(dateList.get(1), equalTo("2019-1"));
 	}
+
 }
