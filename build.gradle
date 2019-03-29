@@ -34,6 +34,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-cloud-connectors'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation 'com.opencsv:opencsv:4.5'
 	runtimeOnly 'org.flywaydb:flyway-core'
 	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

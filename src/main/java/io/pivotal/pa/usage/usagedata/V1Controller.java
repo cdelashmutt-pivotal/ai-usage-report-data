@@ -15,6 +15,8 @@ public class V1Controller {
 	class V1Api {
 		static final String getReportAvailableDates = "/v1/report/availabledates";
 		static final String getReport = "/v1/report/{year}/{month}";
+		static final String downloadSummaryReport = "/v1/download/billing/{year}/{month}";
+		static final String downloadDetailReport = "/v1/download/detail/{year}/{month}";
 
 		public String getGetReportAvailableDates() {
 			return getReportAvailableDates;
@@ -22,6 +24,14 @@ public class V1Controller {
 
 		public String getGetReport() {
 			return getReport;
+		}
+
+		public String getDownloadSummaryReport() {
+			return downloadSummaryReport;
+		}
+
+		public String getDownloadDetailReport() {
+			return downloadDetailReport;
 		}
 	}
 }

@@ -1,10 +1,16 @@
 package io.pivotal.pa.usage.usagedata;
 
+import com.opencsv.CSVWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +18,19 @@ import java.util.Map;
 
 @Service
 public class UsageService {
+
+	Logger log = LoggerFactory.getLogger(UsageService.class);
+
+	public static final String summaryQuery = "select " +
+					"Year(Period_Start) as year, " +
+					"Month(Period_Start) as month, " +
+					"Organization_Name, " +
+					"Sum(case when Platform in (:lowerPlatforms) then instance_count else 0 end) as lowerEnvironmentMaxInstances, " +
+					"Sum(case when Platform in (:upperPlatforms) then instance_count else 0 end) as upperEnvironmentMaxInstances " +
+					"from org_app_usage " +
+					"where Year(Period_Start) = :year and Month(Period_Start) = :month " +
+					"group by Year(Period_Start), Month(Period_Start), Organization_Name " +
+					"order by Organization_Name ";
 
 	private static List<String> lowerPlatforms = Arrays.asList("Sandbox", "FOG");
 	private static List<String> upperPlatforms = Arrays.asList("PXA", "PXC", "JCA", "JCC", "LVA", "LVC");
@@ -30,15 +49,7 @@ public class UsageService {
 		summaryQueryParameters.put("year", year);
 		summaryQueryParameters.put("month", month);
 
-		return jdbcTemplate.query("select " +
-			"Year(Period_Start) as year, " +
-			"Month(Period_Start) as month, " +
-			"Organization_Name, " +
-			"Sum(case when Platform in (:lowerPlatforms) then instance_count else 0 end) as lowerEnvironmentMaxInstances, " +
-			"Sum(case when Platform in (:upperPlatforms) then instance_count else 0 end) as upperEnvironmentMaxInstances " +
-			"from org_app_usage " +
-			"where Year(Period_Start) = :year and Month(Period_Start) = :month " +
-			"group by Year(Period_Start), Month(Period_Start), Organization_Name",
+		return jdbcTemplate.query(summaryQuery,
 			summaryQueryParameters,
 			(rs, rowNum) -> {
 				Map<String,Object> queryParameters = new HashMap<>();
@@ -94,11 +105,53 @@ public class UsageService {
 	}
 
 	public String getBillingDownloadForYearMonth(int year, int month) {
-		return null;
+
+		Map<String,Object> summaryQueryParameters = new HashMap<>();
+		summaryQueryParameters.put("lowerPlatforms", lowerPlatforms);
+		summaryQueryParameters.put("upperPlatforms", upperPlatforms);
+		summaryQueryParameters.put("year", year);
+		summaryQueryParameters.put("month", month);
+
+		return getCSVContent(summaryQuery, summaryQueryParameters);
+
+	}
+
+	private String getCSVContent(String query, Map<String, Object> summaryQueryParameters) {
+		StringWriter stringWriter = new StringWriter();
+		CSVWriter writer = new CSVWriter(stringWriter);
+
+		jdbcTemplate.query(query,
+			summaryQueryParameters,
+			(ResultSetExtractor<Void>) (rs) -> {
+				try {
+					writer.writeAll(rs, true);
+				}
+				catch(Exception e)
+				{
+					log.error("Error writing CSV data", e);
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		);
+
+		return stringWriter.toString();
 	}
 
 	public String getDetailDownloadForYearMonth(int year, int month) {
-		return null;
+		Map<String,Object> summaryQueryParameters = new HashMap<>();
+		summaryQueryParameters.put("year", year);
+		summaryQueryParameters.put("month", month);
+
+		return getCSVContent("select " +
+				"YEAR(Period_Start) as year, Month(Period_Start) as month, " +
+				"organization_guid, organization_name, space_guid, " +
+				"space_name, app_name, app_guid, instance_count, " +
+				"memory_in_mb_per_instance, duration_in_seconds, platform " +
+				"from org_app_usage " +
+				"where YEAR(Period_Start) = :year and " +
+				"MONTH(Period_Start) = :month " +
+				"order by organization_name, space_name, app_name", summaryQueryParameters);
 	}
 
 	public List<String> getAvailableDates() {
