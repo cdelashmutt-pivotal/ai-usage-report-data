@@ -1,5 +1,7 @@
 package io.pivotal.pa.usage.usagedata;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.CSVWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +12,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UsageService {
@@ -161,5 +162,25 @@ public class UsageService {
 				"order by Year(Period_Start) DESC, Month(Period_Start) DESC",
 				(rs,rowNum) -> rs.getString("yearmonth"));
 	}
+
+	public void clearData() {
+		jdbcTemplate.execute("truncate org_app_usage", null);
+		jdbcTemplate.execute("alter table org_app_usage auto_increment=1", null);
+	}
+
+	public void loadData(InputStream inputStream) throws Exception {
+		CSVReaderHeaderAware csv = new CSVReaderHeaderAware(new InputStreamReader(inputStream));
+		List<Map<String,String>> lines = new ArrayList<>();
+		Map<String,String> line = csv.readMap();
+		while(line != null) {
+			lines.add(line);
+			line = csv.readMap();
+		}
+		clearData();
+		jdbcTemplate.batchUpdate("insert into org_app_usage(`space_guid`,`space_name`,`app_name`,`app_guid`,`instance_count`,`memory_in_mb_per_instance`,`duration_in_seconds`,`organization_name`,`organization_guid`,`period_start`,`period_end`,`platform`) " +
+				"Values(:SPACE_GUID,:SPACE_NAME,:APP_NAME,:APP_GUID,:INSTANCE_COUNT,:MEMORY_IN_MB_PER_INSTANCE,:DURATION_IN_SECONDS,:ORGANIZATION_NAME,:ORGANIZATION_GUID,:PERIOD_START,:PERIOD_END,:PLATFORM)",
+				(Map<String,String>[])lines.toArray());
+	}
+
 
 }
