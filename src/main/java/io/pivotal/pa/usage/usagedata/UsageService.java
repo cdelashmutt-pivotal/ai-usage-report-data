@@ -5,10 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
+import org.springframework.jdbc.core.namedparam.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -176,13 +176,63 @@ public class UsageService {
 			line = csv.readMap();
 		}
 		clearData();
-		int batchSize = 500;
+		int batchSize = 10000;
 		for (int j = 0; j < lines.size(); j += batchSize) {
-			jdbcTemplate.batchUpdate("insert into org_app_usage(`space_guid`,`space_name`,`app_name`,`app_guid`,`instance_count`,`memory_in_mb_per_instance`,`duration_in_seconds`,`organization_name`,`organization_guid`,`period_start`,`period_end`,`platform`) " +
-							"Values(:space_guid,:space_name,:app_name,:app_guid,:instance_count,:memory_in_mb_per_instance,:duration_in_seconds,:organization_name,:organization_guid,:period_start,:period_end,:platform)",
-					SqlParameterSourceUtils.createBatch(lines.subList(j, j + batchSize > lines.size() ? lines.size() : j + batchSize)));
+			StopWatch batchTimer = null;
+			if(log.isTraceEnabled()) {
+				batchTimer = new StopWatch();
+				batchTimer.start();
+			}
+			doUpdate(lines, batchSize, j);
+			if(batchTimer != null && log.isTraceEnabled()) {
+				batchTimer.stop();
+				log.trace("Last batch processed at {} rows/sec", batchSize/batchTimer.getTotalTimeSeconds());
+			}
+
 		}
 	}
 
+	private void doUpdate(List<Map<String, String>> lines, int batchSize, int j) {
+		jdbcTemplate.batchUpdate("insert into org_app_usage(`space_guid`,`space_name`,`app_name`,`app_guid`,`instance_count`,`memory_in_mb_per_instance`,`duration_in_seconds`,`organization_name`,`organization_guid`,`period_start`,`period_end`,`platform`) " +
+						"Values(:space_guid,:space_name,:app_name,:app_guid,:instance_count,:memory_in_mb_per_instance,:duration_in_seconds,:organization_name,:organization_guid,:period_start,:period_end,:platform)",
+				createHackedBatch(lines.subList(j, j + batchSize > lines.size() ? lines.size() : j + batchSize)));
+	}
+
+	private static SqlParameterSource[] createHackedBatch(Collection<?> candidates) {
+		SqlParameterSource[] batch = new SqlParameterSource[candidates.size()];
+		int i = 0;
+		for (Object candidate : candidates) {
+			batch[i] = (candidate instanceof Map ? new HackedMapSqlParameterSource((Map<String, ?>) candidate) :
+					new BeanPropertySqlParameterSource(candidate));
+			i++;
+		}
+		return batch;
+	}
+
+	public static class HackedMapSqlParameterSource
+	extends MapSqlParameterSource {
+
+		public HackedMapSqlParameterSource() {
+		}
+
+		public HackedMapSqlParameterSource(String paramName, Object value) {
+			super(paramName, value);
+		}
+
+		public HackedMapSqlParameterSource(Map<String, ?> values) {
+			super(values);
+		}
+
+		@Override
+		public Object getValue(String paramName) {
+			Object data = super.getValue(paramName);
+			if("period_start".equals(paramName) || "period_end".equals(paramName))
+			{
+				String dataString = (String)data;
+				data = dataString.substring(0, dataString.length() - 1);
+			}
+			return data;
+		}
+	}
 
 }
